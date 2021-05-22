@@ -2,7 +2,9 @@ env:
   commonjs: true
   es6: true
   node: true
-extends: google
+extends:
+  - google
+  - prettier
 parserOptions:
   ecmaVersion: 2018
 rules:
