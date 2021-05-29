@@ -2,7 +2,6 @@ const http = require('http');
 const path = require('path');
 const { createWriteStream, unlink } = require('fs');
 const LimitSizeStream = require('./LimitSizeStream');
-const { pipeline } = require('stream');
 
 const server = new http.Server();
 
@@ -25,37 +24,36 @@ server.on('request', (req, res) => {
         readableObjectMode: false,
       });
 
-      pipeline(req, transformStream, writeStream, (e) => {
-        if (e) {
-          switch (e.code) {
-            case 'EEXIST':
-              res.statusCode = 409;
-              res.end('Already exist');
-              break;
-            case 'ERR_STREAM_PREMATURE_CLOSE':
-              unlink(filepath, () => {
-                res.statusCode = 500;
-                res.end('Client aborted connection');
-              });
-              break;
-            case 'LIMIT_EXCEEDED':
-              writeStream.destroy();
-              transformStream.destroy();
-              unlink(filepath, () => {
-                res.statusCode = 413;
-                res.end('File size limit reached');
-              });
+      req.on('aborted', () => {
+        unlink(filepath, () => {
+          res.statusCode = 500;
+          res.end('Client aborted connection');
+        });
+      });
 
-              break;
-
-            default:
-              res.statusCode = 501;
-              res.end('Not implemented');
-          }
-        } else {
-          res.statusCode = 201;
-          res.end();
+      writeStream.on('error', (e) => {
+        switch (e.code) {
+          case 'EEXIST':
+            res.statusCode = 409;
+            res.end('Already exist');
+            break;
         }
+      });
+
+      transformStream.on('error', (e) => {
+        if (e.code === 'LIMIT_EXCEEDED') {
+          unlink(filepath, () => {
+            res.statusCode = 413;
+            res.end('File size limit reached');
+          });
+        }
+      });
+
+      req.pipe(transformStream).pipe(writeStream);
+
+      writeStream.on('close', () => {
+        res.statusCode = 201;
+        res.end();
       });
 
       break;
