@@ -1,0 +1,8 @@
+POST http://localhost:3000/myfile.json
+Content-Type: application/json
+
+{
+"data": "some data"
+}
+
+###
