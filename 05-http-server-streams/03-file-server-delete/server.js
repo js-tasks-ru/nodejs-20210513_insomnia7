@@ -14,22 +14,22 @@ server.on('request', (req, res) => {
     case 'DELETE':
       if (!pathname) {
         res.statusCode = 400;
-        res.end('Should be name of file in request');
+        return res.end('Should be name of file in request');
       }
 
       if (pathname.includes('/')) {
         res.statusCode = 400;
-        res.end('No nested files');
+        return res.end('No nested files');
       }
 
       unlink(filepath, (err) => {
         if (err) {
           res.statusCode = 404;
-          res.end('Not found');
+          return res.end('Not found');
         }
 
         res.statusCode = 200;
-        res.end(`${pathname} has been deleted`);
+        return res.end(`${pathname} has been deleted`);
       });
 
       break;

@@ -29,23 +29,29 @@ server.on('request', (req, res) => {
           res.statusCode = 500;
           res.end('Client aborted connection');
         });
+
+        return
       });
 
       writeStream.on('error', (e) => {
+        writeStream.destroy()
+
         switch (e.code) {
           case 'EEXIST':
             res.statusCode = 409;
-            res.end('Already exist');
-            break;
+            return res.end('Already exist');
         }
       });
 
       transformStream.on('error', (e) => {
+        transformStream.destroy()
+
         if (e.code === 'LIMIT_EXCEEDED') {
           unlink(filepath, () => {
             res.statusCode = 413;
             res.end('File size limit reached');
           });
+
         }
       });
 

@@ -19,25 +19,26 @@ server.on('request', (req, res) => {
     case 'GET':
       if (!pathname) {
         res.statusCode = 400;
-        res.end('No file on empty request');
+        return res.end('No file on empty request');
       }
 
       if (pathname.includes('/')) {
         res.statusCode = 400;
-        res.end('No nested files');
+        return res.end('No nested files');
       }
 
       const readStream = fs.createReadStream(filepath);
 
       readStream.on('error', (e) => {
+        readStream.destroy();
+
         if (e.code === 'ENOENT') {
           res.statusCode = 404;
-          res.end('Not found');
+          return res.end('Not found');
         }
 
-        readStream.destroy();
         res.statusCode = 500;
-        res.end('Internal server error');
+        return res.end('Internal server error');
       });
 
       readStream.pipe(res);
