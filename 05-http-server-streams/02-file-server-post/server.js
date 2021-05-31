@@ -1,16 +1,66 @@
-const url = require('url');
 const http = require('http');
 const path = require('path');
+const { createWriteStream, unlink } = require('fs');
+const LimitSizeStream = require('./LimitSizeStream');
 
 const server = new http.Server();
 
 server.on('request', (req, res) => {
-  const pathname = url.parse(req.url).pathname.slice(1);
-
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const pathname = url.pathname.slice(1);
   const filepath = path.join(__dirname, 'files', pathname);
 
   switch (req.method) {
     case 'POST':
+      if (pathname.includes('/')) {
+        res.statusCode = 400;
+        res.end('No nested files');
+        return;
+      }
+
+      const writeStream = createWriteStream(filepath, { flags: 'wx' });
+      const transformStream = new LimitSizeStream({
+        limit: 1000000,
+        readableObjectMode: false,
+      });
+
+      req.on('aborted', () => {
+        unlink(filepath, () => {
+          res.statusCode = 500;
+          res.end('Client aborted connection');
+        });
+
+        return
+      });
+
+      writeStream.on('error', (e) => {
+        writeStream.destroy()
+
+        switch (e.code) {
+          case 'EEXIST':
+            res.statusCode = 409;
+            return res.end('Already exist');
+        }
+      });
+
+      transformStream.on('error', (e) => {
+        transformStream.destroy()
+
+        if (e.code === 'LIMIT_EXCEEDED') {
+          unlink(filepath, () => {
+            res.statusCode = 413;
+            res.end('File size limit reached');
+          });
+
+        }
+      });
+
+      req.pipe(transformStream).pipe(writeStream);
+
+      writeStream.on('close', () => {
+        res.statusCode = 201;
+        res.end();
+      });
 
       break;
 
