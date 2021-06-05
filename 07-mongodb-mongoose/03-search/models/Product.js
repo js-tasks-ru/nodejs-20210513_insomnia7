@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const connection = require('../libs/connection');
+const transformer = require('../utils/transformer');
 
 const productSchema = new mongoose.Schema({
   title: {
@@ -29,7 +30,20 @@ const productSchema = new mongoose.Schema({
   },
 
   images: [String],
-
 });
+
+productSchema.set('toJSON', transformer);
+
+productSchema.index(
+  { title: 'text', description: 'text' },
+  {
+    weights: {
+      title: 10,
+      description: 5,
+    },
+    default_language: 'russian',
+    name: 'TextSearchIndex',
+  },
+);
 
 module.exports = connection.model('Product', productSchema);
