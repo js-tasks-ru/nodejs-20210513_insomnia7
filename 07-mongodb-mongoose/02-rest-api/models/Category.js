@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const connection = require('../libs/connection');
+const transformer = require('../utils/transformer');
 
 const subCategorySchema = new mongoose.Schema({
   title: {
@@ -7,6 +8,8 @@ const subCategorySchema = new mongoose.Schema({
     required: true,
   },
 });
+
+subCategorySchema.set('toJSON', transformer);
 
 const categorySchema = new mongoose.Schema({
   title: {
@@ -16,5 +19,7 @@ const categorySchema = new mongoose.Schema({
 
   subcategories: [subCategorySchema],
 });
+
+categorySchema.set('toJSON', transformer);
 
 module.exports = connection.model('Category', categorySchema);
