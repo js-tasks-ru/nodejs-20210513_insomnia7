@@ -11,7 +11,7 @@ const client = axios.create({
   validateStatus: () => true,
 });
 
-describe('mongodb-mongoose/rest-api', () => {
+describe.skip('mongodb-mongoose/rest-api', () => {
   describe('получение категорий и товаров', function() {
     let _server;
     let category;
