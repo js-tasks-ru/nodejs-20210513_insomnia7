@@ -1,18 +1,21 @@
 module.exports = {
   mongodb: {
-    uri: (process.env.NODE_ENV === 'test') ?
-      'mongodb://localhost/7-module-2-task' :
-      'mongodb://localhost/any-shop',
+    uri:
+      process.env.NODE_ENV === 'test'
+        ? 'mongodb://localhost/7-module-2-task'
+        : 'mongodb://localhost/any-shop',
   },
   crypto: {
-    iterations: (process.env.NODE_ENV === 'test' ? 1 : 12000),
+    iterations: process.env.NODE_ENV === 'test' ? 1 : 12000,
     length: 128,
     digest: 'sha512',
   },
   providers: {
     github: {
-      app_id: process.env.GITHUB_APP_ID || 'github_app_id',
-      app_secret: process.env.GITHUB_APP_SECRET || 'github_app_secret',
+      app_id: process.env.GITHUB_APP_ID || '6df9452b5bf9fea6e356',
+      app_secret:
+        process.env.GITHUB_APP_SECRET ||
+        '4ce0fafc703f2851c853b5380e567ee39eaaf83e',
       callback_uri: 'http://localhost:3000/oauth/github',
       options: {
         scope: ['user:email'],
