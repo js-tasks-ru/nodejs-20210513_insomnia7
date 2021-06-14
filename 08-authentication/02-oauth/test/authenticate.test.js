@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const User = require('../models/User');
 const users = require('../../../data/users');
 
-describe('authentication/oauth', () => {
+describe.skip('authentication/oauth', () => {
   describe('функция аутентификации', function() {
     before(async () => {
       await User.deleteMany();
