@@ -10,7 +10,7 @@ const request = axios.create({
 
 const expect = require('chai').expect;
 
-describe.skip('authentication/sessions', () => {
+describe('authentication/sessions', () => {
   describe('сессии', function () {
     let server;
     before((done) => {
