@@ -10,28 +10,7 @@ module.exports.register = async (ctx, next) => {
   const user = new User({ displayName, email, verificationToken });
 
   await user.setPassword(password);
-
-  try {
-    await user.save();
-  } catch (e) {
-    if (e.errors.email.properties.type === 'unique') {
-      ctx.status = 400;
-      ctx.body = {
-        errors: { email: e.errors.email.properties.message },
-      };
-      return;
-    }
-
-    if (e.errors.email.properties.message === 'Некорректный email.') {
-      ctx.status = 400;
-      ctx.body = {
-        errors: { email: e.errors.email.properties.message },
-      };
-      return;
-    }
-
-    ctx.throw(400);
-  }
+  await user.save();
 
   try {
     await sendMail({
