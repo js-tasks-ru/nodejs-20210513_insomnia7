@@ -36,7 +36,7 @@ module.exports = {
     },
   },
   mailer: {
-    user: '',
-    password: '',
+    user: 'kacey31@ethereal.email',
+    password: 'V4gsvC51E1ndkCgbtv',
   },
 };

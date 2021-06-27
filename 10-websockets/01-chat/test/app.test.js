@@ -13,7 +13,7 @@ const expect = require('chai').expect;
 const socket = require('../socket');
 const io = require('socket.io-client');
 
-describe('websockets/chat', () => {
+describe.skip('websockets/chat', () => {
   describe('чат', function() {
     let _socket;
     let _server;

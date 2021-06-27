@@ -36,7 +36,7 @@ async function cleanUpDB() {
   await Category.deleteMany({});
 }
 
-describe('email/order', () => {
+describe.skip('email/order', () => {
   let server;
   const port = 3000;
   const serverURL = `http://localhost:${port}/api/orders`;
