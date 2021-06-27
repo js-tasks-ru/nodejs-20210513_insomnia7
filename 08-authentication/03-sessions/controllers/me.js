@@ -3,4 +3,6 @@ module.exports.me = async function me(ctx, next) {
     email: ctx.user.email,
     displayName: ctx.user.displayName,
   };
+
+  next();
 };
